@@ -2,8 +2,16 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Despiece de Puerta — Calculadora de Vano a Corte</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#16323E">
+<link rel="icon" href="./icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Despiece">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -12,104 +20,128 @@
     --blueprint-dark: #0F252E;
     --blueprint-line: #6FA8B8;
     --paper: #F0E6D2;
-    --paper-dim: #CBC0A6;
-    --wood: #C17A3F;
+    --paper-dim: #A9B4B8;
+    --wood: #D98C4A;
     --wood-dark: #9C5E2C;
     --ink: #14201F;
     --ok: #7FB88A;
-    --radius: 3px;
+    --radius: 10px;
+    --radius-lg: 18px;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.25);
+    --shadow-lg: 0 20px 50px -12px rgba(0,0,0,0.55);
+    --ease: cubic-bezier(.2,.8,.2,1);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background: var(--blueprint);
-    background-image:
-      linear-gradient(var(--blueprint-dark) 1px, transparent 1px),
-      linear-gradient(90deg, var(--blueprint-dark) 1px, transparent 1px);
-    background-size: 28px 28px;
+    background:
+      radial-gradient(900px 500px at 12% -10%, rgba(217,140,74,0.14), transparent 60%),
+      radial-gradient(1000px 600px at 100% 0%, rgba(111,168,184,0.12), transparent 55%),
+      linear-gradient(180deg, #14262E 0%, var(--blueprint) 100%);
+    background-attachment: fixed;
     color: var(--paper);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    padding: 32px 20px 64px;
+    padding: 40px 20px 72px;
+    -webkit-font-smoothing: antialiased;
   }
   .wrap{ max-width: 1140px; margin: 0 auto; }
-  header{ margin-bottom: 28px; border-bottom: 1px solid rgba(240,230,210,0.25); padding-bottom: 20px; }
+  header{ margin-bottom: 32px; padding-bottom: 0; }
   header h1{
     font-family: 'Archivo', sans-serif;
     font-weight: 800;
-    font-size: clamp(28px, 4vw, 42px);
-    margin: 0 0 8px;
-    letter-spacing: -0.01em;
-    color: var(--paper);
+    font-size: clamp(30px, 4.2vw, 46px);
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(100deg, var(--paper) 30%, var(--wood) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
   header p{
     margin: 0;
     color: var(--paper-dim);
     font-size: 15px;
     max-width: 62ch;
-    line-height: 1.5;
+    line-height: 1.55;
   }
   .grid{
     display: grid;
     grid-template-columns: 360px 1fr;
-    gap: 24px;
+    gap: 22px;
     align-items: start;
   }
   @media (max-width: 860px){
     .grid{ grid-template-columns: 1fr; }
   }
   .panel{
-    background: rgba(15,37,46,0.55);
-    border: 1px solid rgba(240,230,210,0.3);
-    border-radius: var(--radius);
-    padding: 22px;
+    background: rgba(19,45,55,0.6);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(240,230,210,0.14);
+    border-radius: var(--radius-lg);
+    padding: 26px;
+    box-shadow: var(--shadow-lg);
   }
   .panel h2{
     font-family: 'Archivo', sans-serif;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.04em;
-    margin: 0 0 4px;
+    margin: 0 0 6px;
     color: var(--wood);
+    display:flex; align-items:center; gap:10px;
   }
-  .panel h2 .num{ color: var(--paper-dim); font-weight: 500; margin-right: 6px; }
-  .panel .sub{ font-size: 12.5px; color: var(--paper-dim); margin: 0 0 16px; line-height: 1.4;}
-  fieldset{ border: none; margin: 0 0 18px; padding: 0; }
+  .panel h2 .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(217,140,74,0.16); color: var(--wood);
+    font-weight: 700; font-size: 11px;
+  }
+  .panel .sub{ font-size: 12.5px; color: var(--paper-dim); margin: 0 0 20px; line-height: 1.5;}
+  fieldset{ border: none; margin: 0 0 20px; padding: 0; }
   fieldset legend{
     font-size: 12px;
     text-transform: none;
     color: var(--blueprint-line);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
   }
   .field{ margin-bottom: 12px; }
   .field label{
     display:flex; justify-content: space-between; align-items:baseline;
-    font-size: 13px; color: var(--paper); margin-bottom: 4px;
+    font-size: 13px; color: var(--paper); margin-bottom: 5px;
   }
   .field label .hint{ color: var(--paper-dim); font-size: 11px; font-weight: 400; }
   .field input[type=number]{
     width: 100%;
-    background: rgba(240,230,210,0.08);
-    border: 1px solid rgba(240,230,210,0.35);
+    background: rgba(240,230,210,0.06);
+    border: 1px solid rgba(240,230,210,0.2);
     color: var(--paper);
     font-family: 'IBM Plex Mono', monospace;
     font-size: 15px;
-    padding: 8px 10px;
+    padding: 10px 12px;
     border-radius: var(--radius);
+    transition: border-color .18s var(--ease), background .18s var(--ease), box-shadow .18s var(--ease);
   }
+  .field input[type=number]:hover{ border-color: rgba(240,230,210,0.35); }
   .field input[type=number]:focus{
     outline: none;
     border-color: var(--wood);
-    background: rgba(240,230,210,0.14);
+    background: rgba(240,230,210,0.1);
+    box-shadow: 0 0 0 3px rgba(217,140,74,0.18);
   }
   .row2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .radios{ display:flex; flex-direction:column; gap:8px; }
+  .radios{ display:flex; flex-direction:column; gap:10px; }
   .radios label{
-    display:flex; gap:8px; align-items:flex-start;
+    display:flex; gap:10px; align-items:flex-start;
     font-size: 12.5px; line-height:1.4; color: var(--paper);
-    cursor:pointer;
+    cursor:pointer; padding: 10px 12px; border-radius: var(--radius);
+    background: rgba(240,230,210,0.04);
+    border: 1px solid rgba(240,230,210,0.1);
+    transition: background .18s var(--ease), border-color .18s var(--ease);
   }
+  .radios label:hover{ background: rgba(240,230,210,0.08); border-color: rgba(240,230,210,0.22); }
   .radios input{ margin-top: 3px; accent-color: var(--wood); }
   .radios span.d{ color: var(--paper-dim); display:block; font-size:11.5px; }
 
@@ -117,8 +149,8 @@
   .cutlist{ width: 100%; border-collapse: collapse; margin-bottom: 22px; font-size: 13.5px; }
   .cutlist th, .cutlist td{
     text-align: left;
-    padding: 10px 10px;
-    border-bottom: 1px solid rgba(240,230,210,0.18);
+    padding: 11px 10px;
+    border-bottom: 1px solid rgba(240,230,210,0.1);
   }
   .cutlist thead th{
     font-family:'Archivo', sans-serif;
@@ -126,27 +158,31 @@
     letter-spacing: 0.03em;
     color: var(--blueprint-line);
     font-weight: 700;
-    border-bottom: 1px solid rgba(240,230,210,0.35);
+    border-bottom: 1px solid rgba(240,230,210,0.25);
   }
+  .cutlist tbody tr:hover td{ background: rgba(240,230,210,0.035); }
   .cutlist td.dim, .cutlist td.qty{ font-family:'IBM Plex Mono', monospace; color: var(--wood); font-weight:600; }
   .cutlist tr.section td{
     font-family:'Archivo', sans-serif; font-size:11px; letter-spacing:.03em;
-    color: var(--paper-dim); padding-top: 18px; border-bottom: none;
+    color: var(--paper-dim); padding-top: 20px; border-bottom: none;
   }
+  .cutlist tr.section:hover td{ background: none; }
   .cutlist tr.section td::before{
     content:''; display:inline-block; width:7px; height:7px; border-radius:50%;
     margin-right: 7px; vertical-align: middle;
   }
   .section-marco td::before{ background: var(--wood); }
   .section-hoja td::before{ background: var(--paper); }
+  .section-batiente td::before{ background: var(--ok); }
   .section-tapa td::before{ background: var(--blueprint-line); }
 
   .material-card{
-    background: rgba(193,122,63,0.08);
-    border: 1px solid rgba(193,122,63,0.35);
-    border-radius: var(--radius);
-    padding: 16px 18px;
+    background: linear-gradient(135deg, rgba(217,140,74,0.12), rgba(217,140,74,0.04));
+    border: 1px solid rgba(217,140,74,0.3);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
     margin-bottom: 22px;
+    box-shadow: var(--shadow-sm);
   }
   .material-card h3{
     font-family:'Archivo', sans-serif; font-size: 12px; font-weight: 700;
@@ -154,7 +190,7 @@
   }
   .material-row{
     display:flex; justify-content: space-between; align-items:baseline;
-    gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(240,230,210,0.15);
+    gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(240,230,210,0.12);
     flex-wrap: wrap;
   }
   .material-row:last-of-type{ border-bottom: none; }
@@ -162,18 +198,27 @@
   .material-spec{ font-size: 11px; color: var(--paper-dim); font-family:'IBM Plex Mono', monospace; }
   .material-nums{ display:flex; gap: 14px; align-items:baseline; font-family:'IBM Plex Mono', monospace; font-size: 13px; }
   .material-nums span{ color: var(--paper-dim); }
-  .material-nums strong{ color: var(--wood); font-size: 15px; }
+  .material-nums strong{ color: var(--wood); font-size: 16px; }
   .dot{ display:inline-block; width:7px; height:7px; border-radius:50%; }
   .dot-marco{ background: var(--wood); }
+  .dot-batiente{ background: var(--ok); }
   .dot-tapa{ background: var(--blueprint-line); }
-  .material-note{ font-size: 11.5px; color: var(--paper-dim); margin: 10px 0 0; line-height:1.5; }
+  .material-note{ font-size: 11.5px; color: var(--paper-dim); margin: 12px 0 0; line-height:1.5; }
 
-  .reftable{ margin-top: -6px; }
+  .reftable{ margin-top: -4px; }
   .reftable caption{
     text-align: left; font-size: 11.5px; color: var(--paper-dim);
-    padding-bottom: 8px; font-style: italic;
+    padding-bottom: 10px; font-style: italic;
   }
-  .diagram{ background: rgba(15,37,46,0.35); border: 1px dashed rgba(240,230,210,0.3); border-radius: var(--radius); padding: 14px; margin-bottom: 22px; display:flex; justify-content:center; }
+  .diagram{
+    background: radial-gradient(400px 300px at 50% 30%, rgba(111,168,184,0.08), transparent 70%), rgba(10,25,31,0.4);
+    border: 1px solid rgba(240,230,210,0.14);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 22px;
+    display:flex; justify-content:center;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), var(--shadow-sm);
+  }
   .diagram svg{ width: 100%; max-width: 300px; height: auto; display:block; }
   .dimtext{ font-family:'IBM Plex Mono', monospace; font-size: 11px; fill: var(--paper); }
   .dimtext-accent{ fill: var(--wood); }
@@ -192,25 +237,30 @@
     font-weight: 700;
     font-size: 12.5px;
     letter-spacing: 0.02em;
-    padding: 10px 18px;
-    border-radius: var(--radius);
+    padding: 12px 22px;
+    border-radius: 999px;
     border: 1px solid var(--wood);
-    background: var(--wood);
+    background: linear-gradient(135deg, #E39C5D, var(--wood));
     color: var(--blueprint-dark);
     cursor: pointer;
+    box-shadow: 0 8px 20px -8px rgba(217,140,74,0.6);
+    transition: transform .16s var(--ease), box-shadow .16s var(--ease), filter .16s var(--ease);
   }
   button.secondary{
-    background: transparent;
+    background: rgba(240,230,210,0.06);
     color: var(--paper);
-    border-color: rgba(240,230,210,0.4);
+    border-color: rgba(240,230,210,0.3);
+    box-shadow: none;
   }
-  button:hover{ filter: brightness(1.08); }
+  button:hover{ transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 10px 24px -8px rgba(217,140,74,0.7); }
+  button.secondary:hover{ background: rgba(240,230,210,0.12); box-shadow: none; }
+  button:active{ transform: translateY(0); }
   @media print{
     body{ background: white; color: black; padding: 0; }
-    .panel{ border-color: #999; background:none; }
+    .panel{ border-color: #999; background:none; backdrop-filter: none; box-shadow: none; }
     .btnrow{ display:none; }
     header p{ color: #333; }
-    header{ border-bottom-color: #ccc; }
+    header h1{ background: none; -webkit-background-clip: initial; background-clip: initial; color: #000; }
     .panel h2{ color: #8A4A1F; }
     .panel .sub, .field .hint, fieldset legend, .radios span.d{ color: #555; }
     .field input[type=number]{ background: none; border-color: #999; color: #000; }
@@ -219,6 +269,7 @@
     .cutlist tr.section td{ color: #555; }
     .section-marco td::before{ background: #8A4A1F; }
     .section-hoja td::before{ background: #999; }
+    .section-batiente td::before{ background: #4E7D57; }
     .section-tapa td::before{ background: #555; }
     .material-card{ background: none; border-color: #8A4A1F; }
     .material-card h3{ color: #8A4A1F; }
@@ -227,6 +278,7 @@
     .material-nums span{ color: #555; }
     .material-nums strong{ color: #8A4A1F; }
     .dot-marco{ background: #8A4A1F; }
+    .dot-batiente{ background: #4E7D57; }
     .dot-tapa{ background: #555; }
     .material-note{ color: #555; }
     .reftable caption{ color: #555; }
@@ -300,13 +352,13 @@
         <div class="radios">
           <label>
             <input type="radio" name="ensamble" value="jambaCorrida" checked>
-            <span>Jambas de piso a techo — el cabezal encaja entre las jambas.
+            <span>Marcos grandes de piso a techo — el marco superior grande encaja entre los marcos grandes.
               <span class="d">Más común en puertas de madera a medida.</span>
             </span>
           </label>
           <label>
             <input type="radio" name="ensamble" value="cabezalCorrido">
-            <span>Cabezal corrido de lado a lado — las jambas encajan debajo del cabezal.
+            <span>Marco superior grande corrido de lado a lado — los marcos grandes encajan debajo.
               <span class="d">Usual en marcos prearmados tipo kit.</span>
             </span>
           </label>
@@ -336,14 +388,28 @@
       </fieldset>
 
       <fieldset>
-        <legend>Tapajuntas / moldura (corte a 45°)</legend>
+        <legend>Marco pequeño (contra el que cierra la hoja)</legend>
         <div class="row2">
           <div class="field">
-            <label>Ancho del tapajuntas <span class="hint">cm</span></label>
+            <label>Ancho del marco pequeño <span class="hint">cm</span></label>
+            <input type="number" id="anchoBatiente" value="2" step="0.1" min="0.5">
+          </div>
+          <div class="field">
+            <label>Espesor del marco pequeño <span class="hint">cm</span></label>
+            <input type="number" id="espesorBatiente" value="1" step="0.1" min="0.3">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Jamba (corte recto)</legend>
+        <div class="row2">
+          <div class="field">
+            <label>Ancho de la jamba <span class="hint">cm</span></label>
             <input type="number" id="tapaAncho" value="7" step="0.1" min="0">
           </div>
           <div class="field">
-            <label>Espesor de la madera <span class="hint">cm</span></label>
+            <label>Espesor de la jamba <span class="hint">cm</span></label>
             <input type="number" id="espesorTapa" value="1.5" step="0.1" min="0.3">
           </div>
         </div>
@@ -434,9 +500,15 @@ function calcular(){
   const hojaAncho = MwInt - 2 * HfLat;
   const hojaAlto = MhInt - HfSup - HfInf;
 
+  const anchoBatiente = num('anchoBatiente');
+  const espesorBatiente = num('espesorBatiente');
+  const batienteLateralLargo = MhInt;
+  const batienteSuperiorLargo = MwInt - 2 * anchoBatiente;
+  const batienteNetoM = (2 * batienteLateralLargo + batienteSuperiorLargo) / 100;
+
   const tapaAncho = num('tapaAncho');
   const ambasCaras = document.getElementById('tapaAmbasCaras').checked;
-  const tapaLateralLargo = MhExt + tapaAncho;
+  const tapaLateralLargo = MhExt;
   const tapaSuperiorLargo = MwExt + 2 * tapaAncho;
   const tapaLateralQty = ambasCaras ? 4 : 2;
   const tapaSuperiorQty = ambasCaras ? 2 : 1;
@@ -448,12 +520,14 @@ function calcular(){
 
   const marcoNetoM = (2 * jambaLargo + cabezalLargo) / 100;
   const marcoBrutoM = marcoNetoM * (1 + desperdicio / 100);
+  const batienteBrutoM = batienteNetoM * (1 + desperdicio / 100);
   const tapaNetoM = (tapaLateralQty * tapaLateralLargo + tapaSuperiorQty * tapaSuperiorLargo) / 100;
   const tapaBrutoM = tapaNetoM * (1 + desperdicio / 100);
 
   return { Vw, Vh, Gf, MwExt, MhExt, MwInt, MhInt, jambaLargo, cabezalLargo, hojaAncho, hojaAlto, ensamble,
            tapaAncho, tapaLateralLargo, tapaSuperiorLargo, tapaLateralQty, tapaSuperiorQty,
-           espesorMarco, espesorHoja, espesorTapa, desperdicio, marcoNetoM, marcoBrutoM, tapaNetoM, tapaBrutoM };
+           espesorMarco, espesorHoja, espesorTapa, desperdicio, marcoNetoM, marcoBrutoM, tapaNetoM, tapaBrutoM,
+           anchoBatiente, espesorBatiente, batienteLateralLargo, batienteSuperiorLargo, batienteNetoM, batienteBrutoM };
 }
 
 function fmt(n){ return n.toFixed(1).replace('.', ','); }
@@ -463,19 +537,22 @@ function render(){
   const body = document.getElementById('cutlistBody');
   body.innerHTML = `
     <tr class="section section-marco"><td colspan="5">Marco</td></tr>
-    <tr><td>Jamba</td><td class="qty">2</td><td class="dim">${fmt(r.jambaLargo)}</td><td class="dim">${fmt(r.Gf)}</td><td class="dim">${fmt(r.espesorMarco)}</td></tr>
-    <tr><td>Cabezal</td><td class="qty">1</td><td class="dim">${fmt(r.cabezalLargo)}</td><td class="dim">${fmt(r.Gf)}</td><td class="dim">${fmt(r.espesorMarco)}</td></tr>
+    <tr><td>Marco grande</td><td class="qty">2</td><td class="dim">${fmt(r.jambaLargo)}</td><td class="dim">${fmt(r.Gf)}</td><td class="dim">${fmt(r.espesorMarco)}</td></tr>
+    <tr><td>Marco superior grande</td><td class="qty">1</td><td class="dim">${fmt(r.cabezalLargo)}</td><td class="dim">${fmt(r.Gf)}</td><td class="dim">${fmt(r.espesorMarco)}</td></tr>
     <tr class="section section-hoja"><td colspan="5">Hoja</td></tr>
     <tr><td>Puerta (hoja)</td><td class="qty">1</td><td class="dim">${fmt(r.hojaAlto)}</td><td class="dim">${fmt(r.hojaAncho)}</td><td class="dim">${fmt(r.espesorHoja)}</td></tr>
-    <tr class="section section-tapa"><td colspan="5">Tapajuntas / moldura</td></tr>
-    <tr><td>Tapajuntas lateral (corte a 45° en un extremo)</td><td class="qty">${r.tapaLateralQty}</td><td class="dim">${fmt(r.tapaLateralLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
-    <tr><td>Tapajuntas superior (corte a 45° en ambos extremos)</td><td class="qty">${r.tapaSuperiorQty}</td><td class="dim">${fmt(r.tapaSuperiorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
+    <tr class="section section-batiente"><td colspan="5">Marco pequeño</td></tr>
+    <tr><td>Marco pequeño lateral</td><td class="qty">2</td><td class="dim">${fmt(r.batienteLateralLargo)}</td><td class="dim">${fmt(r.anchoBatiente)}</td><td class="dim">${fmt(r.espesorBatiente)}</td></tr>
+    <tr><td>Marco pequeño superior (va entre los dos laterales)</td><td class="qty">1</td><td class="dim">${fmt(r.batienteSuperiorLargo)}</td><td class="dim">${fmt(r.anchoBatiente)}</td><td class="dim">${fmt(r.espesorBatiente)}</td></tr>
+    <tr class="section section-tapa"><td colspan="5">Jamba</td></tr>
+    <tr><td>Jamba lateral (corte recto, va debajo del superior)</td><td class="qty">${r.tapaLateralQty}</td><td class="dim">${fmt(r.tapaLateralLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
+    <tr><td>Jamba superior (corte recto, va encima de los laterales)</td><td class="qty">${r.tapaSuperiorQty}</td><td class="dim">${fmt(r.tapaSuperiorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
   `;
 
   document.getElementById('materialBody').innerHTML = `
     <div class="material-row">
       <div class="material-label">
-        <span class="dot dot-marco"></span>Tabla para marco
+        <span class="dot dot-marco"></span>Tabla para marco grande
         <span class="material-spec">${fmt(r.Gf)} × ${fmt(r.espesorMarco)} cm de sección</span>
       </div>
       <div class="material-nums">
@@ -485,7 +562,17 @@ function render(){
     </div>
     <div class="material-row">
       <div class="material-label">
-        <span class="dot dot-tapa"></span>Moldura para tapajuntas
+        <span class="dot dot-batiente"></span>Listón para marco pequeño
+        <span class="material-spec">${fmt(r.anchoBatiente)} × ${fmt(r.espesorBatiente)} cm de sección</span>
+      </div>
+      <div class="material-nums">
+        <span>${r.batienteNetoM.toFixed(2).replace('.', ',')} m netos</span>
+        <strong>${r.batienteBrutoM.toFixed(2).replace('.', ',')} m a comprar</strong>
+      </div>
+    </div>
+    <div class="material-row">
+      <div class="material-label">
+        <span class="dot dot-tapa"></span>Moldura para jamba
         <span class="material-spec">${fmt(r.tapaAncho)} × ${fmt(r.espesorTapa)} cm de sección</span>
       </div>
       <div class="material-nums">
@@ -556,6 +643,12 @@ function drawDiagram(r){
 
 document.querySelectorAll('input').forEach(el => el.addEventListener('input', render));
 render();
+
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
