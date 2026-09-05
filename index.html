@@ -133,8 +133,48 @@
     font-family:'Archivo', sans-serif; font-size:11px; letter-spacing:.03em;
     color: var(--paper-dim); padding-top: 18px; border-bottom: none;
   }
-  .diagram{ background: rgba(15,37,46,0.35); border: 1px dashed rgba(240,230,210,0.3); border-radius: var(--radius); padding: 14px; margin-bottom: 22px;}
-  .diagram svg{ width: 100%; height: auto; display:block; }
+  .cutlist tr.section td::before{
+    content:''; display:inline-block; width:7px; height:7px; border-radius:50%;
+    margin-right: 7px; vertical-align: middle;
+  }
+  .section-marco td::before{ background: var(--wood); }
+  .section-hoja td::before{ background: var(--paper); }
+  .section-tapa td::before{ background: var(--blueprint-line); }
+
+  .material-card{
+    background: rgba(193,122,63,0.08);
+    border: 1px solid rgba(193,122,63,0.35);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 22px;
+  }
+  .material-card h3{
+    font-family:'Archivo', sans-serif; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.03em; margin: 0 0 12px; color: var(--wood);
+  }
+  .material-row{
+    display:flex; justify-content: space-between; align-items:baseline;
+    gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(240,230,210,0.15);
+    flex-wrap: wrap;
+  }
+  .material-row:last-of-type{ border-bottom: none; }
+  .material-label{ font-size: 13.5px; color: var(--paper); display:flex; align-items:baseline; gap: 6px; flex-wrap: wrap; }
+  .material-spec{ font-size: 11px; color: var(--paper-dim); font-family:'IBM Plex Mono', monospace; }
+  .material-nums{ display:flex; gap: 14px; align-items:baseline; font-family:'IBM Plex Mono', monospace; font-size: 13px; }
+  .material-nums span{ color: var(--paper-dim); }
+  .material-nums strong{ color: var(--wood); font-size: 15px; }
+  .dot{ display:inline-block; width:7px; height:7px; border-radius:50%; }
+  .dot-marco{ background: var(--wood); }
+  .dot-tapa{ background: var(--blueprint-line); }
+  .material-note{ font-size: 11.5px; color: var(--paper-dim); margin: 10px 0 0; line-height:1.5; }
+
+  .reftable{ margin-top: -6px; }
+  .reftable caption{
+    text-align: left; font-size: 11.5px; color: var(--paper-dim);
+    padding-bottom: 8px; font-style: italic;
+  }
+  .diagram{ background: rgba(15,37,46,0.35); border: 1px dashed rgba(240,230,210,0.3); border-radius: var(--radius); padding: 14px; margin-bottom: 22px; display:flex; justify-content:center; }
+  .diagram svg{ width: 100%; max-width: 300px; height: auto; display:block; }
   .dimtext{ font-family:'IBM Plex Mono', monospace; font-size: 11px; fill: var(--paper); }
   .dimtext-accent{ fill: var(--wood); }
   .dimtext-hoja{ fill: var(--paper); }
@@ -177,6 +217,19 @@
     .cutlist thead th{ color: #333; border-bottom-color: #333; }
     .cutlist td.dim, .cutlist td.qty{ color: #8A4A1F; }
     .cutlist tr.section td{ color: #555; }
+    .section-marco td::before{ background: #8A4A1F; }
+    .section-hoja td::before{ background: #999; }
+    .section-tapa td::before{ background: #555; }
+    .material-card{ background: none; border-color: #8A4A1F; }
+    .material-card h3{ color: #8A4A1F; }
+    .material-label{ color: #000; }
+    .material-spec{ color: #555; }
+    .material-nums span{ color: #555; }
+    .material-nums strong{ color: #8A4A1F; }
+    .dot-marco{ background: #8A4A1F; }
+    .dot-tapa{ background: #555; }
+    .material-note{ color: #555; }
+    .reftable caption{ color: #555; }
     .diagram{ border-color: #999; background: none; }
     .footnote{ color: #333; }
     .footnote strong{ color: #000; }
@@ -220,9 +273,15 @@
 
       <fieldset>
         <legend>Marco</legend>
-        <div class="field">
-          <label>Ancho de cara del marco (galce) <span class="hint">cm</span></label>
-          <input type="number" id="galce" value="6" step="0.1" min="1">
+        <div class="row2">
+          <div class="field">
+            <label>Ancho de cara del marco (galce) <span class="hint">cm</span></label>
+            <input type="number" id="galce" value="6" step="0.1" min="1">
+          </div>
+          <div class="field">
+            <label>Espesor de la madera <span class="hint">cm</span></label>
+            <input type="number" id="espesorMarco" value="3.5" step="0.1" min="0.5">
+          </div>
         </div>
         <div class="row2">
           <div class="field">
@@ -256,6 +315,10 @@
 
       <fieldset>
         <legend>Hoja (holguras de funcionamiento)</legend>
+        <div class="field">
+          <label>Espesor de la hoja <span class="hint">cm</span></label>
+          <input type="number" id="espesorHoja" value="4" step="0.1" min="1">
+        </div>
         <div class="row2">
           <div class="field">
             <label>Lateral <span class="hint">mm/lado</span></label>
@@ -274,9 +337,15 @@
 
       <fieldset>
         <legend>Tapajuntas / moldura (corte a 45°)</legend>
-        <div class="field">
-          <label>Ancho del tapajuntas <span class="hint">cm</span></label>
-          <input type="number" id="tapaAncho" value="7" step="0.1" min="0">
+        <div class="row2">
+          <div class="field">
+            <label>Ancho del tapajuntas <span class="hint">cm</span></label>
+            <input type="number" id="tapaAncho" value="7" step="0.1" min="0">
+          </div>
+          <div class="field">
+            <label>Espesor de la madera <span class="hint">cm</span></label>
+            <input type="number" id="espesorTapa" value="1.5" step="0.1" min="0.3">
+          </div>
         </div>
         <div class="radios">
           <label>
@@ -285,6 +354,14 @@
               <span class="d">4 piezas laterales y 2 superiores. Desmarca si es solo una cara.</span>
             </span>
           </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Compra de material</legend>
+        <div class="field">
+          <label>Desperdicio de corte <span class="hint">% sobre el metraje neto</span></label>
+          <input type="number" id="desperdicio" value="10" step="1" min="0">
         </div>
       </fieldset>
 
@@ -298,14 +375,27 @@
       <p class="sub">Se recalcula automáticamente al cambiar cualquier medida.</p>
 
       <div class="diagram">
-        <svg id="diagramSvg" viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg"></svg>
+        <svg id="diagramSvg" viewBox="0 0 300 400" width="300" height="400" xmlns="http://www.w3.org/2000/svg"></svg>
       </div>
 
       <table class="cutlist">
         <thead>
-          <tr><th>Pieza</th><th>Cant.</th><th>Largo (cm)</th><th>Ancho de cara (cm)</th></tr>
+          <tr><th>Pieza a cortar</th><th>Cant.</th><th>Largo (cm)</th><th>Ancho de cara (cm)</th><th>Espesor (cm)</th></tr>
         </thead>
         <tbody id="cutlistBody"></tbody>
+      </table>
+
+      <div class="material-card">
+        <h3>Resumen de material a comprar</h3>
+        <div id="materialBody"></div>
+      </div>
+
+      <table class="cutlist reftable">
+        <caption>Medidas de control — no son piezas de corte, sirven para verificar el marco ya instalado</caption>
+        <thead>
+          <tr><th>Medida de control</th><th>Alto (cm)</th><th>Ancho (cm)</th></tr>
+        </thead>
+        <tbody id="refBody"></tbody>
       </table>
 
       <p class="footnote" id="footnote"></p>
@@ -351,8 +441,19 @@ function calcular(){
   const tapaLateralQty = ambasCaras ? 4 : 2;
   const tapaSuperiorQty = ambasCaras ? 2 : 1;
 
+  const espesorMarco = num('espesorMarco');
+  const espesorHoja = num('espesorHoja');
+  const espesorTapa = num('espesorTapa');
+  const desperdicio = num('desperdicio');
+
+  const marcoNetoM = (2 * jambaLargo + cabezalLargo) / 100;
+  const marcoBrutoM = marcoNetoM * (1 + desperdicio / 100);
+  const tapaNetoM = (tapaLateralQty * tapaLateralLargo + tapaSuperiorQty * tapaSuperiorLargo) / 100;
+  const tapaBrutoM = tapaNetoM * (1 + desperdicio / 100);
+
   return { Vw, Vh, Gf, MwExt, MhExt, MwInt, MhInt, jambaLargo, cabezalLargo, hojaAncho, hojaAlto, ensamble,
-           tapaAncho, tapaLateralLargo, tapaSuperiorLargo, tapaLateralQty, tapaSuperiorQty };
+           tapaAncho, tapaLateralLargo, tapaSuperiorLargo, tapaLateralQty, tapaSuperiorQty,
+           espesorMarco, espesorHoja, espesorTapa, desperdicio, marcoNetoM, marcoBrutoM, tapaNetoM, tapaBrutoM };
 }
 
 function fmt(n){ return n.toFixed(1).replace('.', ','); }
@@ -361,17 +462,43 @@ function render(){
   const r = calcular();
   const body = document.getElementById('cutlistBody');
   body.innerHTML = `
-    <tr class="section"><td colspan="4">Marco</td></tr>
-    <tr><td>Jamba</td><td class="qty">2</td><td class="dim">${fmt(r.jambaLargo)}</td><td class="dim">${fmt(r.Gf)}</td></tr>
-    <tr><td>Cabezal</td><td class="qty">1</td><td class="dim">${fmt(r.cabezalLargo)}</td><td class="dim">${fmt(r.Gf)}</td></tr>
-    <tr class="section"><td colspan="4">Hoja</td></tr>
-    <tr><td>Puerta (hoja)</td><td class="qty">1</td><td class="dim">${fmt(r.hojaAlto)}</td><td class="dim">${fmt(r.hojaAncho)}</td></tr>
-    <tr class="section"><td colspan="4">Tapajuntas / moldura</td></tr>
-    <tr><td>Tapajuntas lateral (corte a 45° en un extremo)</td><td class="qty">${r.tapaLateralQty}</td><td class="dim">${fmt(r.tapaLateralLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td></tr>
-    <tr><td>Tapajuntas superior (corte a 45° en ambos extremos)</td><td class="qty">${r.tapaSuperiorQty}</td><td class="dim">${fmt(r.tapaSuperiorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td></tr>
-    <tr class="section"><td colspan="4">Referencia</td></tr>
-    <tr><td>Marco, dimensión exterior a instalar en el vano</td><td class="qty">—</td><td class="dim">${fmt(r.MhExt)}</td><td class="dim">${fmt(r.MwExt)}</td></tr>
-    <tr><td>Luz libre interior del marco</td><td class="qty">—</td><td class="dim">${fmt(r.MhInt)}</td><td class="dim">${fmt(r.MwInt)}</td></tr>
+    <tr class="section section-marco"><td colspan="5">Marco</td></tr>
+    <tr><td>Jamba</td><td class="qty">2</td><td class="dim">${fmt(r.jambaLargo)}</td><td class="dim">${fmt(r.Gf)}</td><td class="dim">${fmt(r.espesorMarco)}</td></tr>
+    <tr><td>Cabezal</td><td class="qty">1</td><td class="dim">${fmt(r.cabezalLargo)}</td><td class="dim">${fmt(r.Gf)}</td><td class="dim">${fmt(r.espesorMarco)}</td></tr>
+    <tr class="section section-hoja"><td colspan="5">Hoja</td></tr>
+    <tr><td>Puerta (hoja)</td><td class="qty">1</td><td class="dim">${fmt(r.hojaAlto)}</td><td class="dim">${fmt(r.hojaAncho)}</td><td class="dim">${fmt(r.espesorHoja)}</td></tr>
+    <tr class="section section-tapa"><td colspan="5">Tapajuntas / moldura</td></tr>
+    <tr><td>Tapajuntas lateral (corte a 45° en un extremo)</td><td class="qty">${r.tapaLateralQty}</td><td class="dim">${fmt(r.tapaLateralLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
+    <tr><td>Tapajuntas superior (corte a 45° en ambos extremos)</td><td class="qty">${r.tapaSuperiorQty}</td><td class="dim">${fmt(r.tapaSuperiorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
+  `;
+
+  document.getElementById('materialBody').innerHTML = `
+    <div class="material-row">
+      <div class="material-label">
+        <span class="dot dot-marco"></span>Tabla para marco
+        <span class="material-spec">${fmt(r.Gf)} × ${fmt(r.espesorMarco)} cm de sección</span>
+      </div>
+      <div class="material-nums">
+        <span>${r.marcoNetoM.toFixed(2).replace('.', ',')} m netos</span>
+        <strong>${r.marcoBrutoM.toFixed(2).replace('.', ',')} m a comprar</strong>
+      </div>
+    </div>
+    <div class="material-row">
+      <div class="material-label">
+        <span class="dot dot-tapa"></span>Moldura para tapajuntas
+        <span class="material-spec">${fmt(r.tapaAncho)} × ${fmt(r.espesorTapa)} cm de sección</span>
+      </div>
+      <div class="material-nums">
+        <span>${r.tapaNetoM.toFixed(2).replace('.', ',')} m netos</span>
+        <strong>${r.tapaBrutoM.toFixed(2).replace('.', ',')} m a comprar</strong>
+      </div>
+    </div>
+    <p class="material-note">Incluye ${fmt(r.desperdicio)}% de desperdicio de corte. La hoja se compra como pieza sólida o tablero (${fmt(r.hojaAncho)} × ${fmt(r.hojaAlto)} × ${fmt(r.espesorHoja)} cm), no en metros lineales.</p>
+  `;
+
+  document.getElementById('refBody').innerHTML = `
+    <tr><td>Marco, dimensión exterior a instalar en el vano</td><td class="dim">${fmt(r.MhExt)}</td><td class="dim">${fmt(r.MwExt)}</td></tr>
+    <tr><td>Luz libre interior del marco</td><td class="dim">${fmt(r.MhInt)}</td><td class="dim">${fmt(r.MwInt)}</td></tr>
   `;
 
   document.getElementById('footnote').innerHTML =
@@ -384,8 +511,8 @@ function render(){
 
 function drawDiagram(r){
   const svg = document.getElementById('diagramSvg');
-  const W = 420, H = 340;
-  const padX = 70, padTop = 30, padBottom = 55;
+  const W = 300, H = 400;
+  const padX = 50, padTop = 28, padBottom = 60;
   const availW = W - padX * 2;
   const availH = H - padTop - padBottom;
   const scale = Math.min(availW / r.Vw, availH / r.Vh);
