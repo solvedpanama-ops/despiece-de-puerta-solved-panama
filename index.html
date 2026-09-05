@@ -246,6 +246,22 @@
         </div>
       </fieldset>
 
+      <fieldset>
+        <legend>Tapajuntas / moldura (corte a 45°)</legend>
+        <div class="field">
+          <label>Ancho del tapajuntas <span class="hint">cm</span></label>
+          <input type="number" id="tapaAncho" value="7" step="0.1" min="0">
+        </div>
+        <div class="radios">
+          <label>
+            <input type="checkbox" id="tapaAmbasCaras" checked>
+            <span>Aplicar en ambas caras de la pared
+              <span class="d">4 piezas laterales y 2 superiores. Desmarca si es solo una cara.</span>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
       <div class="btnrow">
         <button class="secondary" onclick="window.print()">Imprimir / Guardar PDF</button>
       </div>
@@ -302,7 +318,15 @@ function calcular(){
   const hojaAncho = MwInt - 2 * HfLat;
   const hojaAlto = MhInt - HfSup - HfInf;
 
-  return { Vw, Vh, Gf, MwExt, MhExt, MwInt, MhInt, jambaLargo, cabezalLargo, hojaAncho, hojaAlto, ensamble };
+  const tapaAncho = num('tapaAncho');
+  const ambasCaras = document.getElementById('tapaAmbasCaras').checked;
+  const tapaLateralLargo = MhExt + tapaAncho;
+  const tapaSuperiorLargo = MwExt + 2 * tapaAncho;
+  const tapaLateralQty = ambasCaras ? 4 : 2;
+  const tapaSuperiorQty = ambasCaras ? 2 : 1;
+
+  return { Vw, Vh, Gf, MwExt, MhExt, MwInt, MhInt, jambaLargo, cabezalLargo, hojaAncho, hojaAlto, ensamble,
+           tapaAncho, tapaLateralLargo, tapaSuperiorLargo, tapaLateralQty, tapaSuperiorQty };
 }
 
 function fmt(n){ return n.toFixed(1).replace('.', ','); }
@@ -316,6 +340,9 @@ function render(){
     <tr><td>Cabezal</td><td class="qty">1</td><td class="dim">${fmt(r.cabezalLargo)}</td><td class="dim">${fmt(r.Gf)}</td></tr>
     <tr class="section"><td colspan="4">Hoja</td></tr>
     <tr><td>Puerta (hoja)</td><td class="qty">1</td><td class="dim">${fmt(r.hojaAlto)}</td><td class="dim">${fmt(r.hojaAncho)}</td></tr>
+    <tr class="section"><td colspan="4">Tapajuntas / moldura</td></tr>
+    <tr><td>Tapajuntas lateral (corte a 45° en un extremo)</td><td class="qty">${r.tapaLateralQty}</td><td class="dim">${fmt(r.tapaLateralLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td></tr>
+    <tr><td>Tapajuntas superior (corte a 45° en ambos extremos)</td><td class="qty">${r.tapaSuperiorQty}</td><td class="dim">${fmt(r.tapaSuperiorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td></tr>
     <tr class="section"><td colspan="4">Referencia</td></tr>
     <tr><td>Marco, dimensión exterior a instalar en el vano</td><td class="qty">—</td><td class="dim">${fmt(r.MhExt)}</td><td class="dim">${fmt(r.MwExt)}</td></tr>
     <tr><td>Luz libre interior del marco</td><td class="qty">—</td><td class="dim">${fmt(r.MhInt)}</td><td class="dim">${fmt(r.MwInt)}</td></tr>
@@ -352,8 +379,11 @@ function drawDiagram(r){
   const hojaY = my0 + gf;
   const hojaH = r.hojaAlto * scale;
 
+  const tapa = r.tapaAncho * scale;
+
   svg.innerHTML = `
     <rect x="${x0}" y="${y0}" width="${vw}" height="${vh}" fill="none" stroke="#6FA8B8" stroke-dasharray="4 3" stroke-width="1"/>
+    <rect x="${mx0-tapa}" y="${my0-tapa}" width="${mw+2*tapa}" height="${mh+tapa}" fill="none" stroke="#F0E6D2" stroke-opacity="0.5" stroke-dasharray="2 2" stroke-width="1"/>
     <rect x="${mx0}" y="${my0}" width="${mw}" height="${mh}" fill="none" stroke="#C17A3F" stroke-width="2"/>
     <rect x="${mx0+gf}" y="${my0+gf}" width="${mw-2*gf}" height="${mh-gf}" fill="none" stroke="#6FA8B8" stroke-width="1" stroke-dasharray="2 2"/>
     <rect x="${hojaX}" y="${hojaY}" width="${hojaW}" height="${hojaH}" fill="#C17A3F" fill-opacity="0.18" stroke="#F0E6D2" stroke-width="1.2"/>
