@@ -144,6 +144,31 @@
   .radios label:hover{ background: rgba(240,230,210,0.08); border-color: rgba(240,230,210,0.22); }
   .radios input{ margin-top: 3px; accent-color: var(--wood); }
   .radios span.d{ color: var(--paper-dim); display:block; font-size:11.5px; }
+  .autonote{ font-size: 11.5px; color: var(--paper-dim); margin: -6px 0 0; }
+  .autonote a{ color: var(--wood); text-decoration: none; border-bottom: 1px dashed var(--wood); }
+  .autonote a:hover{ color: var(--paper); }
+  details.advanced{ margin: 4px 0 18px; }
+  details.advanced summary{
+    cursor: pointer; list-style: none; font-size: 12.5px; font-weight: 600;
+    color: var(--blueprint-line); padding: 10px 14px; border-radius: var(--radius);
+    background: rgba(240,230,210,0.05); border: 1px solid rgba(240,230,210,0.15);
+    display:flex; align-items:center; gap:8px;
+  }
+  details.advanced summary::-webkit-details-marker{ display:none; }
+  details.advanced summary::before{ content:'▸'; font-size: 10px; transition: transform .15s var(--ease); }
+  details.advanced[open] summary::before{ transform: rotate(90deg); }
+  details.advanced summary:hover{ background: rgba(240,230,210,0.1); }
+  details.advanced fieldset{ margin-top: 18px; }
+  .toggle-group{ display:flex; gap:8px; }
+  .toggle-pill{
+    flex:1; text-align:center; padding:9px 10px; border-radius:999px;
+    border:1px solid rgba(240,230,210,0.25); background: rgba(240,230,210,0.05);
+    cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--paper);
+    transition: background .15s var(--ease), color .15s var(--ease), border-color .15s var(--ease);
+  }
+  .toggle-pill input{ display:none; }
+  .toggle-pill:has(input:checked){ background: var(--wood); color: var(--blueprint-dark); border-color: var(--wood); font-weight:600; }
+  .toggle-pill:hover{ border-color: rgba(240,230,210,0.45); }
 
   .results h2{ color: var(--paper); }
   .cutlist{ width: 100%; border-collapse: collapse; margin-bottom: 22px; font-size: 13.5px; }
@@ -194,6 +219,8 @@
     flex-wrap: wrap;
   }
   .material-row:last-of-type{ border-bottom: none; }
+  .material-row.material-total{ border-top: 1px dashed rgba(217,140,74,0.4); padding-top: 12px; }
+  .material-row.material-total .material-label{ font-weight: 600; color: var(--paper); }
   .material-label{ font-size: 13.5px; color: var(--paper); display:flex; align-items:baseline; gap: 6px; flex-wrap: wrap; }
   .material-spec{ font-size: 11px; color: var(--paper-dim); font-family:'IBM Plex Mono', monospace; }
   .material-nums{ display:flex; gap: 14px; align-items:baseline; font-family:'IBM Plex Mono', monospace; font-size: 13px; }
@@ -220,6 +247,9 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), var(--shadow-sm);
   }
   .diagram svg{ width: 100%; max-width: 300px; height: auto; display:block; }
+  .diagram-caption{ font-size: 11.5px; color: var(--paper-dim); text-align:center; margin: -8px 0 6px; }
+  .diagram-side{ padding: 8px; }
+  .sideview-block{ fill: var(--wood); fill-opacity: 0.28; stroke: var(--wood); stroke-width: 1.5; }
   .dimtext{ font-family:'IBM Plex Mono', monospace; font-size: 11px; fill: var(--paper); }
   .dimtext-accent{ fill: var(--wood); }
   .dimtext-hoja{ fill: var(--paper); }
@@ -231,6 +261,11 @@
   .tapa-outline{ fill:none; stroke: var(--paper); stroke-opacity: 0.5; stroke-dasharray: 2 2; stroke-width: 1; }
   .footnote{ font-size: 12px; color: var(--paper-dim); line-height:1.6; }
   .footnote strong{ color: var(--paper); }
+  .footnote.warning{
+    display:none; background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.4);
+    border-radius: var(--radius); padding: 10px 14px; margin-top: 10px; color: #F3C9C9;
+  }
+  .footnote.warning strong{ color: #F3C9C9; }
   .btnrow{ display:flex; gap:10px; margin-top: 18px; flex-wrap: wrap; }
   button{
     font-family:'Archivo', sans-serif;
@@ -283,8 +318,17 @@
     .material-note{ color: #555; }
     .reftable caption{ color: #555; }
     .diagram{ border-color: #999; background: none; }
+    .diagram-caption{ color: #555; }
+    .sideview-block{ fill: #8A4A1F; fill-opacity: 0.15; stroke: #8A4A1F; }
     .footnote{ color: #333; }
     .footnote strong{ color: #000; }
+    .footnote.warning{ background: none; border-color: #A32D2D; color: #A32D2D; }
+    .footnote.warning strong{ color: #A32D2D; }
+    .autonote, .autonote a{ color: #555; }
+    details.advanced summary{ background: none; border-color: #999; color: #333; }
+    details.advanced > *:not(summary){ display: block !important; }
+    .toggle-pill{ border-color: #999; color: #000; }
+    .toggle-pill:has(input:checked){ background: none; border-color: #8A4A1F; color: #8A4A1F; font-weight:700; }
     .dimtext{ fill: #111; }
     .dimtext-accent{ fill: #8A4A1F; }
     .dimtext-hoja{ fill: #111; }
@@ -321,19 +365,9 @@
             <input type="number" id="vanoAlto" value="210" step="0.5" min="1">
           </div>
         </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Marco</legend>
-        <div class="row2">
-          <div class="field">
-            <label>Ancho de cara del marco (galce) <span class="hint">cm</span></label>
-            <input type="number" id="galce" value="6" step="0.1" min="1">
-          </div>
-          <div class="field">
-            <label>Espesor de la madera <span class="hint">cm</span></label>
-            <input type="number" id="espesorMarco" value="3.5" step="0.1" min="0.5">
-          </div>
+        <div class="field">
+          <label>Profundidad de la pared <span class="hint">cm — de aquí sale el marco pequeño</span></label>
+          <input type="number" id="profundidadPared" value="12" step="0.5" min="0">
         </div>
         <div class="row2">
           <div class="field">
@@ -345,6 +379,31 @@
             <input type="number" id="holgSup" value="1" step="0.1" min="0">
           </div>
         </div>
+        <div class="field">
+          <label>Espacio abajo, al piso <span class="hint">mm — subir si habrá piso nuevo o alfombra</span></label>
+          <input type="number" id="hfInf" value="10" step="0.5" min="0">
+        </div>
+      </fieldset>
+
+      <details class="advanced">
+        <summary>Valores por default (ábrelo solo si necesitas cambiar algo)</summary>
+
+      <fieldset>
+        <legend>Marco</legend>
+        <div class="row2">
+          <div class="field">
+            <label>Ancho del marco grande <span class="hint" id="galceHint">cm — automático</span></label>
+            <input type="number" id="galce" value="12" step="0.1" min="0">
+          </div>
+          <div class="field">
+            <label>Espesor de la madera <span class="hint">cm — marco grande, pequeño y jamba</span></label>
+            <div class="toggle-group">
+              <label class="toggle-pill"><input type="radio" name="espesorMarcoChoice" value="1.8" checked>1,8 cm</label>
+              <label class="toggle-pill"><input type="radio" name="espesorMarcoChoice" value="1.5">1,5 cm</label>
+            </div>
+          </div>
+        </div>
+        <p class="autonote" id="autoNoteGalce">El ancho se calcula solo, igual a la profundidad de la pared. <a href="#" id="resetAutoGalce">Volver a automático</a></p>
       </fieldset>
 
       <fieldset>
@@ -369,50 +428,36 @@
         <legend>Hoja (holguras de funcionamiento)</legend>
         <div class="field">
           <label>Espesor de la hoja <span class="hint">cm</span></label>
-          <input type="number" id="espesorHoja" value="4" step="0.1" min="1">
+          <input type="number" id="espesorHoja" value="3.6" step="0.1" min="1">
         </div>
         <div class="row2">
           <div class="field">
-            <label>Lateral <span class="hint">mm/lado</span></label>
-            <input type="number" id="hfLat" value="3" step="0.5" min="0">
+            <label>Espacio a los lados <span class="hint">mm/lado — 8 mm en total entre ambos lados</span></label>
+            <input type="number" id="hfLat" value="4" step="0.5" min="0">
           </div>
           <div class="field">
-            <label>Superior <span class="hint">mm</span></label>
+            <label>Espacio arriba <span class="hint">mm — entre la hoja y el marco</span></label>
             <input type="number" id="hfSup" value="3" step="0.5" min="0">
           </div>
-        </div>
-        <div class="field">
-          <label>Inferior / al piso <span class="hint">mm — subir si habrá piso nuevo o alfombra</span></label>
-          <input type="number" id="hfInf" value="10" step="0.5" min="0">
         </div>
       </fieldset>
 
       <fieldset>
         <legend>Marco pequeño (contra el que cierra la hoja)</legend>
-        <div class="row2">
-          <div class="field">
-            <label>Ancho del marco pequeño <span class="hint">cm</span></label>
-            <input type="number" id="anchoBatiente" value="2" step="0.1" min="0.5">
-          </div>
-          <div class="field">
-            <label>Espesor del marco pequeño <span class="hint">cm</span></label>
-            <input type="number" id="espesorBatiente" value="1" step="0.1" min="0.3">
-          </div>
+        <div class="field">
+          <label>Ancho del marco pequeño <span class="hint" id="anchoBatienteHint">cm — automático</span></label>
+          <input type="number" id="anchoBatiente" value="8.2" step="0.1" min="0">
         </div>
+        <p class="autonote" id="autoNote">Se calcula solo: profundidad de la pared menos 3,8 cm fijos. El espesor de la madera es el mismo que pusiste para el marco grande. <a href="#" id="resetAuto">Volver a automático</a></p>
       </fieldset>
 
       <fieldset>
         <legend>Jamba (corte recto)</legend>
-        <div class="row2">
-          <div class="field">
-            <label>Ancho de la jamba <span class="hint">cm</span></label>
-            <input type="number" id="tapaAncho" value="7" step="0.1" min="0">
-          </div>
-          <div class="field">
-            <label>Espesor de la jamba <span class="hint">cm</span></label>
-            <input type="number" id="espesorTapa" value="1.5" step="0.1" min="0.3">
-          </div>
+        <div class="field">
+          <label>Ancho de la jamba <span class="hint">cm</span></label>
+          <input type="number" id="tapaAncho" value="7" step="0.1" min="0">
         </div>
+        <p class="autonote">El espesor de la madera es el mismo que elegiste arriba para el marco.</p>
         <div class="radios">
           <label>
             <input type="checkbox" id="tapaAmbasCaras" checked>
@@ -431,6 +476,8 @@
         </div>
       </fieldset>
 
+      </details>
+
       <div class="btnrow">
         <button class="secondary" onclick="window.print()">Imprimir / Guardar PDF</button>
       </div>
@@ -444,9 +491,14 @@
         <svg id="diagramSvg" viewBox="0 0 300 400" width="300" height="400" xmlns="http://www.w3.org/2000/svg"></svg>
       </div>
 
+      <p class="diagram-caption">Corte de perfil del marco grande (visto de lado)</p>
+      <div class="diagram diagram-side">
+        <svg id="sideViewSvg" viewBox="0 0 300 150" width="300" height="150" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+
       <table class="cutlist">
         <thead>
-          <tr><th>Pieza a cortar</th><th>Cant.</th><th>Largo (cm)</th><th>Ancho de cara (cm)</th><th>Espesor (cm)</th></tr>
+          <tr><th>Pieza a cortar</th><th>Cant.</th><th>Largo (cm)</th><th>Ancho (cm)</th><th>Espesor (cm)</th></tr>
         </thead>
         <tbody id="cutlistBody"></tbody>
       </table>
@@ -471,10 +523,15 @@
 
 <script>
 function num(id){ return parseFloat(document.getElementById(id).value) || 0; }
+function getEspesorMarco(){
+  const checked = document.querySelector('input[name=espesorMarcoChoice]:checked');
+  return checked ? parseFloat(checked.value) : 1.8;
+}
 
 function calcular(){
   const Vw = num('vanoAncho');
   const Vh = num('vanoAlto');
+  const profundidadPared = num('profundidadPared');
   const Gf = num('galce');
   const HiLat = num('holgLat');
   const HiSup = num('holgSup');
@@ -497,11 +554,11 @@ function calcular(){
     jambaLargo = MhExt - Gf;
   }
 
-  const hojaAncho = MwInt - 2 * HfLat;
-  const hojaAlto = MhInt - HfSup - HfInf;
+  const hojaAncho = MwExt - 2 * HfLat;
+  const hojaAlto = MhExt - HfSup - HfInf;
 
   const anchoBatiente = num('anchoBatiente');
-  const espesorBatiente = num('espesorBatiente');
+  const espesorBatiente = getEspesorMarco();
   const batienteLateralLargo = MhInt;
   const batienteSuperiorLargo = MwInt - 2 * anchoBatiente;
   const batienteNetoM = (2 * batienteLateralLargo + batienteSuperiorLargo) / 100;
@@ -513,9 +570,9 @@ function calcular(){
   const tapaLateralQty = ambasCaras ? 4 : 2;
   const tapaSuperiorQty = ambasCaras ? 2 : 1;
 
-  const espesorMarco = num('espesorMarco');
+  const espesorMarco = getEspesorMarco();
   const espesorHoja = num('espesorHoja');
-  const espesorTapa = num('espesorTapa');
+  const espesorTapa = getEspesorMarco();
   const desperdicio = num('desperdicio');
 
   const marcoNetoM = (2 * jambaLargo + cabezalLargo) / 100;
@@ -524,10 +581,21 @@ function calcular(){
   const tapaNetoM = (tapaLateralQty * tapaLateralLargo + tapaSuperiorQty * tapaSuperiorLargo) / 100;
   const tapaBrutoM = tapaNetoM * (1 + desperdicio / 100);
 
+  const areaMarcoGrandeM2 = (2 * jambaLargo * Gf + cabezalLargo * Gf) / 10000;
+  const areaMarcoPequenoM2 = (2 * batienteLateralLargo * anchoBatiente + batienteSuperiorLargo * anchoBatiente) / 10000;
+  const areaJambaM2 = (tapaLateralQty * tapaLateralLargo * tapaAncho + tapaSuperiorQty * tapaSuperiorLargo * tapaAncho) / 10000;
+  const areaTotalNetaM2 = areaMarcoGrandeM2 + areaMarcoPequenoM2 + areaJambaM2;
+  const areaTotalBrutaM2 = areaTotalNetaM2 * (1 + desperdicio / 100);
+  const SHEET_W = 1.83, SHEET_H = 2.44;
+  const sheetAreaM2 = SHEET_W * SHEET_H;
+  const laminasNecesarias = Math.ceil(areaTotalBrutaM2 / sheetAreaM2);
+
   return { Vw, Vh, Gf, MwExt, MhExt, MwInt, MhInt, jambaLargo, cabezalLargo, hojaAncho, hojaAlto, ensamble,
            tapaAncho, tapaLateralLargo, tapaSuperiorLargo, tapaLateralQty, tapaSuperiorQty,
            espesorMarco, espesorHoja, espesorTapa, desperdicio, marcoNetoM, marcoBrutoM, tapaNetoM, tapaBrutoM,
-           anchoBatiente, espesorBatiente, batienteLateralLargo, batienteSuperiorLargo, batienteNetoM, batienteBrutoM };
+           anchoBatiente, espesorBatiente, batienteLateralLargo, batienteSuperiorLargo, batienteNetoM, batienteBrutoM,
+           areaMarcoGrandeM2, areaMarcoPequenoM2, areaJambaM2, areaTotalNetaM2, areaTotalBrutaM2, sheetAreaM2, laminasNecesarias, SHEET_W, SHEET_H,
+           profundidadPared };
 }
 
 function fmt(n){ return n.toFixed(1).replace('.', ','); }
@@ -552,35 +620,37 @@ function render(){
   document.getElementById('materialBody').innerHTML = `
     <div class="material-row">
       <div class="material-label">
-        <span class="dot dot-marco"></span>Tabla para marco grande
-        <span class="material-spec">${fmt(r.Gf)} × ${fmt(r.espesorMarco)} cm de sección</span>
+        <span class="dot dot-marco"></span>Marco grande
+        <span class="material-spec">${fmt(r.Gf)} cm de ancho</span>
       </div>
-      <div class="material-nums">
-        <span>${r.marcoNetoM.toFixed(2).replace('.', ',')} m netos</span>
-        <strong>${r.marcoBrutoM.toFixed(2).replace('.', ',')} m a comprar</strong>
-      </div>
+      <div class="material-nums"><span>${r.areaMarcoGrandeM2.toFixed(2).replace('.', ',')} m²</span></div>
     </div>
     <div class="material-row">
       <div class="material-label">
-        <span class="dot dot-batiente"></span>Listón para marco pequeño
-        <span class="material-spec">${fmt(r.anchoBatiente)} × ${fmt(r.espesorBatiente)} cm de sección</span>
+        <span class="dot dot-batiente"></span>Marco pequeño
+        <span class="material-spec">${fmt(r.anchoBatiente)} cm de ancho</span>
       </div>
-      <div class="material-nums">
-        <span>${r.batienteNetoM.toFixed(2).replace('.', ',')} m netos</span>
-        <strong>${r.batienteBrutoM.toFixed(2).replace('.', ',')} m a comprar</strong>
-      </div>
+      <div class="material-nums"><span>${r.areaMarcoPequenoM2.toFixed(2).replace('.', ',')} m²</span></div>
     </div>
     <div class="material-row">
       <div class="material-label">
-        <span class="dot dot-tapa"></span>Moldura para jamba
-        <span class="material-spec">${fmt(r.tapaAncho)} × ${fmt(r.espesorTapa)} cm de sección</span>
+        <span class="dot dot-tapa"></span>Jamba
+        <span class="material-spec">${fmt(r.tapaAncho)} cm de ancho</span>
       </div>
+      <div class="material-nums"><span>${r.areaJambaM2.toFixed(2).replace('.', ',')} m²</span></div>
+    </div>
+    <div class="material-row material-total">
+      <div class="material-label">Área total de tablero (${fmt(r.espesorMarco)} cm de espesor)</div>
       <div class="material-nums">
-        <span>${r.tapaNetoM.toFixed(2).replace('.', ',')} m netos</span>
-        <strong>${r.tapaBrutoM.toFixed(2).replace('.', ',')} m a comprar</strong>
+        <span>${r.areaTotalNetaM2.toFixed(2).replace('.', ',')} m² netos</span>
+        <strong>${r.areaTotalBrutaM2.toFixed(2).replace('.', ',')} m² con desperdicio</strong>
       </div>
     </div>
-    <p class="material-note">Incluye ${fmt(r.desperdicio)}% de desperdicio de corte. La hoja se compra como pieza sólida o tablero (${fmt(r.hojaAncho)} × ${fmt(r.hojaAlto)} × ${fmt(r.espesorHoja)} cm), no en metros lineales.</p>
+    <div class="material-row material-total">
+      <div class="material-label">Láminas de melamina a comprar</div>
+      <div class="material-nums"><strong>${r.laminasNecesarias} lámina${r.laminasNecesarias === 1 ? '' : 's'} de ${fmt(r.SHEET_W*100).replace('.0','')} × ${fmt(r.SHEET_H*100).replace('.0','')} cm</strong></div>
+    </div>
+    <p class="material-note">Incluye ${fmt(r.desperdicio)}% de desperdicio de corte. El marco grande, el marco pequeño y la jamba salen del mismo tablero (mismo espesor), así que se suman en una sola área. La hoja se compra aparte, como pieza sólida o tablero de ${fmt(r.espesorHoja)} cm (${fmt(r.hojaAncho)} × ${fmt(r.hojaAlto)} cm), no cuenta en esta lámina.</p>
   `;
 
   document.getElementById('refBody').innerHTML = `
@@ -590,10 +660,10 @@ function render(){
 
   document.getElementById('footnote').innerHTML =
     `<strong>Vano ingresado:</strong> ${fmt(r.Vw)} × ${fmt(r.Vh)} cm (ancho × alto). ` +
-    `El largo de jamba y cabezal ya asume el tipo de ensamble seleccionado; en "ancho de cara" se refiere a la cara vista de la madera, no al espesor de la pared. ` +
-    `Verifica que el espesor de la pared quede cubierto por la profundidad del marco antes de cortar.`;
+    `El largo de marco grande y marco superior grande ya asume el tipo de ensamble seleccionado.`;
 
   drawDiagram(r);
+  drawSideView(r);
 }
 
 function drawDiagram(r){
@@ -607,25 +677,20 @@ function drawDiagram(r){
   const vw = r.Vw * scale, vh = r.Vh * scale;
   const x0 = (W - vw) / 2, y0 = padTop;
 
-  const gf = r.Gf * scale;
   const hiLat = ( (r.Vw - r.MwExt) / 2 ) * scale;
   const hiSup = (r.Vh - r.MhExt) * scale;
 
   const mx0 = x0 + hiLat, my0 = y0 + hiSup;
   const mw = r.MwExt * scale, mh = r.MhExt * scale;
 
-  const hojaX = mx0 + gf + (r.MwInt - r.hojaAncho)/2 * scale;
   const hojaW = r.hojaAncho * scale;
-  const hojaY = my0 + gf;
   const hojaH = r.hojaAlto * scale;
-
-  const tapa = r.tapaAncho * scale;
+  const hojaX = mx0 + (mw - hojaW) / 2;
+  const hojaY = my0 + (mh - hojaH) / 2;
 
   svg.innerHTML = `
     <rect x="${x0}" y="${y0}" width="${vw}" height="${vh}" class="vano-outline"/>
-    <rect x="${mx0-tapa}" y="${my0-tapa}" width="${mw+2*tapa}" height="${mh+tapa}" class="tapa-outline"/>
     <rect x="${mx0}" y="${my0}" width="${mw}" height="${mh}" class="marco-outline"/>
-    <rect x="${mx0+gf}" y="${my0+gf}" width="${mw-2*gf}" height="${mh-gf}" class="marco-inner"/>
     <rect x="${hojaX}" y="${hojaY}" width="${hojaW}" height="${hojaH}" class="hoja-fill"/>
     <line x1="${x0}" y1="${y0+vh+14}" x2="${x0+vw}" y2="${y0+vh+14}" class="dimline"/>
     <line x1="${x0}" y1="${y0+vh+9}" x2="${x0}" y2="${y0+vh+19}" class="dimline"/>
@@ -635,13 +700,92 @@ function drawDiagram(r){
     <line x1="${x0-14}" y1="${y0}" x2="${x0-14}" y2="${y0+vh}" class="dimline"/>
     <text x="${x0-20}" y="${y0+vh/2}" text-anchor="end" class="dimtext" transform="rotate(-90 ${x0-20} ${y0+vh/2})">vano ${fmt(r.Vh)} cm</text>
 
-    <text x="${mx0+mw/2}" y="${my0-8}" text-anchor="middle" class="dimtext dimtext-accent">marco ${fmt(r.MwExt)} cm</text>
+    <text x="${mx0+mw/2}" y="${my0-8}" text-anchor="middle" class="dimtext dimtext-accent">marco ${fmt(r.MwExt)} × ${fmt(r.MhExt)} cm</text>
     <text x="${hojaX+hojaW/2}" y="${hojaY+hojaH/2}" text-anchor="middle" class="dimtext dimtext-hoja">hoja</text>
     <text x="${hojaX+hojaW/2}" y="${hojaY+hojaH/2+14}" text-anchor="middle" class="dimtext dimtext-hoja">${fmt(r.hojaAncho)} × ${fmt(r.hojaAlto)} cm</text>
   `;
 }
 
-document.querySelectorAll('input').forEach(el => el.addEventListener('input', render));
+function drawSideView(r){
+  const svg = document.getElementById('sideViewSvg');
+  const W = 300, H = 150;
+  const padX = 18, padRight = 88, padTop = 34, padBottom = 30;
+  const availW = W - padX - padRight;
+  const scale = availW / r.Gf;
+
+  const blockW = r.Gf * scale;
+  const blockH = r.espesorMarco * scale;
+  const x0 = padX;
+  const y0 = padTop + (H - padTop - padBottom - blockH) / 2;
+
+  svg.innerHTML = `
+    <rect x="${x0}" y="${y0}" width="${blockW}" height="${blockH}" class="sideview-block"/>
+
+    <line x1="${x0}" y1="${y0-16}" x2="${x0+blockW}" y2="${y0-16}" class="dimline"/>
+    <line x1="${x0}" y1="${y0-20}" x2="${x0}" y2="${y0-12}" class="dimline"/>
+    <line x1="${x0+blockW}" y1="${y0-20}" x2="${x0+blockW}" y2="${y0-12}" class="dimline"/>
+    <text x="${x0+blockW/2}" y="${y0-24}" text-anchor="middle" class="dimtext dimtext-accent">ancho ${fmt(r.Gf)} cm</text>
+
+    <line x1="${x0+blockW+14}" y1="${y0}" x2="${x0+blockW+14}" y2="${y0+blockH}" class="dimline"/>
+    <line x1="${x0+blockW+10}" y1="${y0}" x2="${x0+blockW+18}" y2="${y0}" class="dimline"/>
+    <line x1="${x0+blockW+10}" y1="${y0+blockH}" x2="${x0+blockW+18}" y2="${y0+blockH}" class="dimline"/>
+    <text x="${x0+blockW+22}" y="${y0+blockH/2-4}" text-anchor="start" class="dimtext">espesor</text>
+    <text x="${x0+blockW+22}" y="${y0+blockH/2+10}" text-anchor="start" class="dimtext">${fmt(r.espesorMarco)} cm</text>
+  `;
+}
+
+const RESERVA_FIJA_CM = 3.8;
+let batienteAuto = true;
+let galceAuto = true;
+
+function syncBatienteFromProfundidad(){
+  if (!batienteAuto) return;
+  const p = num('profundidadPared');
+  const val = Math.max(0, p - RESERVA_FIJA_CM);
+  document.getElementById('anchoBatiente').value = val.toFixed(1);
+}
+
+function syncGalceFromProfundidad(){
+  if (!galceAuto) return;
+  const p = num('profundidadPared');
+  document.getElementById('galce').value = p.toFixed(1);
+}
+
+syncBatienteFromProfundidad();
+syncGalceFromProfundidad();
+
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', (e) => {
+  if (e.target.id === 'profundidadPared'){
+    syncBatienteFromProfundidad();
+    syncGalceFromProfundidad();
+  }
+  if (e.target.id === 'anchoBatiente'){
+    batienteAuto = false;
+    document.getElementById('anchoBatienteHint').textContent = 'cm — ajustado a mano';
+  }
+  if (e.target.id === 'galce'){
+    galceAuto = false;
+    document.getElementById('galceHint').textContent = 'cm — ajustado a mano';
+  }
+  render();
+}));
+
+document.getElementById('resetAuto').addEventListener('click', (e) => {
+  e.preventDefault();
+  batienteAuto = true;
+  document.getElementById('anchoBatienteHint').textContent = 'cm — automático';
+  syncBatienteFromProfundidad();
+  render();
+});
+
+document.getElementById('resetAutoGalce').addEventListener('click', (e) => {
+  e.preventDefault();
+  galceAuto = true;
+  document.getElementById('galceHint').textContent = 'cm — automático';
+  syncGalceFromProfundidad();
+  render();
+});
+
 render();
 
 if ('serviceWorker' in navigator){
