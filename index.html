@@ -383,6 +383,13 @@
           <label>Espacio abajo, al piso <span class="hint">mm — subir si habrá piso nuevo o alfombra</span></label>
           <input type="number" id="hfInf" value="10" step="0.5" min="0">
         </div>
+        <div class="field">
+          <label>Espesor de la madera <span class="hint">cm — marco grande, pequeño y jamba</span></label>
+          <div class="toggle-group">
+            <label class="toggle-pill"><input type="radio" name="espesorMarcoChoice" value="1.8" checked>1,8 cm</label>
+            <label class="toggle-pill"><input type="radio" name="espesorMarcoChoice" value="1.5">1,5 cm</label>
+          </div>
+        </div>
       </fieldset>
 
       <details class="advanced">
@@ -390,18 +397,9 @@
 
       <fieldset>
         <legend>Marco</legend>
-        <div class="row2">
-          <div class="field">
-            <label>Ancho del marco grande <span class="hint" id="galceHint">cm — automático</span></label>
-            <input type="number" id="galce" value="12" step="0.1" min="0">
-          </div>
-          <div class="field">
-            <label>Espesor de la madera <span class="hint">cm — marco grande, pequeño y jamba</span></label>
-            <div class="toggle-group">
-              <label class="toggle-pill"><input type="radio" name="espesorMarcoChoice" value="1.8" checked>1,8 cm</label>
-              <label class="toggle-pill"><input type="radio" name="espesorMarcoChoice" value="1.5">1,5 cm</label>
-            </div>
-          </div>
+        <div class="field">
+          <label>Ancho del marco grande <span class="hint" id="galceHint">cm — automático</span></label>
+          <input type="number" id="galce" value="12" step="0.1" min="0">
         </div>
         <p class="autonote" id="autoNoteGalce">El ancho se calcula solo, igual a la profundidad de la pared. <a href="#" id="resetAutoGalce">Volver a automático</a></p>
       </fieldset>
@@ -542,8 +540,8 @@ function calcular(){
 
   const MwExt = Vw - 2 * HiLat;
   const MhExt = Vh - HiSup;
-  const MwInt = MwExt - 2 * Gf;
-  const MhInt = MhExt - Gf;
+  const MwInt = MwExt - 2 * getEspesorMarco();
+  const MhInt = MhExt - getEspesorMarco();
 
   let jambaLargo, cabezalLargo;
   if (ensamble === 'jambaCorrida'){
@@ -560,15 +558,15 @@ function calcular(){
   const anchoBatiente = num('anchoBatiente');
   const espesorBatiente = getEspesorMarco();
   const batienteLateralLargo = MhInt;
-  const batienteSuperiorLargo = MwInt - 2 * anchoBatiente;
+  const batienteSuperiorLargo = MwInt - 2 * espesorBatiente;
   const batienteNetoM = (2 * batienteLateralLargo + batienteSuperiorLargo) / 100;
 
   const tapaAncho = num('tapaAncho');
   const ambasCaras = document.getElementById('tapaAmbasCaras').checked;
-  const tapaLateralLargo = MhExt;
-  const tapaSuperiorLargo = MwExt + 2 * tapaAncho;
-  const tapaLateralQty = ambasCaras ? 4 : 2;
-  const tapaSuperiorQty = ambasCaras ? 2 : 1;
+  const tapaLateralInteriorLargo = batienteLateralLargo - getEspesorMarco() / 2;
+  const tapaLateralExteriorLargo = jambaLargo - getEspesorMarco() / 2;
+  const tapaSuperiorInteriorLargo = MwExt - getEspesorMarco() + 2 * tapaAncho;
+  const tapaSuperiorExteriorLargo = MwExt - 3 * getEspesorMarco() + 2 * tapaAncho;
 
   const espesorMarco = getEspesorMarco();
   const espesorHoja = num('espesorHoja');
@@ -578,12 +576,10 @@ function calcular(){
   const marcoNetoM = (2 * jambaLargo + cabezalLargo) / 100;
   const marcoBrutoM = marcoNetoM * (1 + desperdicio / 100);
   const batienteBrutoM = batienteNetoM * (1 + desperdicio / 100);
-  const tapaNetoM = (tapaLateralQty * tapaLateralLargo + tapaSuperiorQty * tapaSuperiorLargo) / 100;
-  const tapaBrutoM = tapaNetoM * (1 + desperdicio / 100);
 
   const areaMarcoGrandeM2 = (2 * jambaLargo * Gf + cabezalLargo * Gf) / 10000;
   const areaMarcoPequenoM2 = (2 * batienteLateralLargo * anchoBatiente + batienteSuperiorLargo * anchoBatiente) / 10000;
-  const areaJambaM2 = (tapaLateralQty * tapaLateralLargo * tapaAncho + tapaSuperiorQty * tapaSuperiorLargo * tapaAncho) / 10000;
+  const areaJambaM2 = (2 * tapaLateralInteriorLargo * tapaAncho + (ambasCaras ? 2 * tapaLateralExteriorLargo * tapaAncho : 0) + tapaSuperiorInteriorLargo * tapaAncho + (ambasCaras ? tapaSuperiorExteriorLargo * tapaAncho : 0)) / 10000;
   const areaTotalNetaM2 = areaMarcoGrandeM2 + areaMarcoPequenoM2 + areaJambaM2;
   const areaTotalBrutaM2 = areaTotalNetaM2 * (1 + desperdicio / 100);
   const SHEET_W = 1.83, SHEET_H = 2.44;
@@ -591,8 +587,8 @@ function calcular(){
   const laminasNecesarias = Math.ceil(areaTotalBrutaM2 / sheetAreaM2);
 
   return { Vw, Vh, Gf, MwExt, MhExt, MwInt, MhInt, jambaLargo, cabezalLargo, hojaAncho, hojaAlto, ensamble,
-           tapaAncho, tapaLateralLargo, tapaSuperiorLargo, tapaLateralQty, tapaSuperiorQty,
-           espesorMarco, espesorHoja, espesorTapa, desperdicio, marcoNetoM, marcoBrutoM, tapaNetoM, tapaBrutoM,
+           tapaAncho, tapaLateralInteriorLargo, tapaLateralExteriorLargo, tapaSuperiorInteriorLargo, tapaSuperiorExteriorLargo, ambasCarasFlag: ambasCaras,
+           espesorMarco, espesorHoja, espesorTapa, desperdicio, marcoNetoM, marcoBrutoM,
            anchoBatiente, espesorBatiente, batienteLateralLargo, batienteSuperiorLargo, batienteNetoM, batienteBrutoM,
            areaMarcoGrandeM2, areaMarcoPequenoM2, areaJambaM2, areaTotalNetaM2, areaTotalBrutaM2, sheetAreaM2, laminasNecesarias, SHEET_W, SHEET_H,
            profundidadPared };
@@ -613,8 +609,10 @@ function render(){
     <tr><td>Marco pequeño lateral</td><td class="qty">2</td><td class="dim">${fmt(r.batienteLateralLargo)}</td><td class="dim">${fmt(r.anchoBatiente)}</td><td class="dim">${fmt(r.espesorBatiente)}</td></tr>
     <tr><td>Marco pequeño superior (va entre los dos laterales)</td><td class="qty">1</td><td class="dim">${fmt(r.batienteSuperiorLargo)}</td><td class="dim">${fmt(r.anchoBatiente)}</td><td class="dim">${fmt(r.espesorBatiente)}</td></tr>
     <tr class="section section-tapa"><td colspan="5">Jamba</td></tr>
-    <tr><td>Jamba lateral (corte recto, va debajo del superior)</td><td class="qty">${r.tapaLateralQty}</td><td class="dim">${fmt(r.tapaLateralLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
-    <tr><td>Jamba superior (corte recto, va encima de los laterales)</td><td class="qty">${r.tapaSuperiorQty}</td><td class="dim">${fmt(r.tapaSuperiorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
+    <tr><td>Jamba lateral — cara interior (corte recto)</td><td class="qty">2</td><td class="dim">${fmt(r.tapaLateralInteriorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
+    ${r.ambasCarasFlag ? `<tr><td>Jamba lateral — cara exterior (corte recto)</td><td class="qty">2</td><td class="dim">${fmt(r.tapaLateralExteriorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>` : ''}
+    <tr><td>Jamba superior — cara interior (corte recto)</td><td class="qty">1</td><td class="dim">${fmt(r.tapaSuperiorInteriorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>
+    ${r.ambasCarasFlag ? `<tr><td>Jamba superior — cara exterior (corte recto)</td><td class="qty">1</td><td class="dim">${fmt(r.tapaSuperiorExteriorLargo)}</td><td class="dim">${fmt(r.tapaAncho)}</td><td class="dim">${fmt(r.espesorTapa)}</td></tr>` : ''}
   `;
 
   document.getElementById('materialBody').innerHTML = `
