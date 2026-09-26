@@ -289,6 +289,7 @@
   }
   .footnote.warning strong{ color: #F3C9C9; }
   .btnrow{ display:flex; gap:10px; margin-top: 18px; flex-wrap: wrap; }
+  .copy-status{ display:none; font-size: 12px; color: var(--ok); margin-top: 8px; }
   button{
     font-family:'Archivo', sans-serif;
     font-weight: 700;
@@ -512,7 +513,10 @@
 
       <div class="btnrow">
         <button class="secondary" onclick="window.print()">Imprimir / Guardar PDF</button>
+        <button class="secondary" id="btnCopiarTexto">Copiar texto</button>
+        <button id="btnWhatsapp">Enviar por WhatsApp</button>
       </div>
+      <p class="copy-status" id="copyStatus"></p>
     </div>
 
     <div class="panel results">
@@ -877,6 +881,50 @@ document.getElementById('resetAutoGalce').addEventListener('click', (e) => {
   document.getElementById('galceHint').textContent = 'cm — automático';
   syncGalceFromProfundidad();
   render();
+});
+
+function buildTextoResumen(){
+  const r = calcular();
+  const titulo = document.getElementById('tituloPuerta').value.trim();
+  const linea = (nombre, cant, largo, ancho, esp) =>
+    `${nombre}: ${cant} pza${cant === 1 ? '' : 's'} — ${fmt(largo)} x ${fmt(ancho)} x ${fmt(esp)} cm`;
+
+  let out = [];
+  out.push('DESPIECE DE PUERTA' + (titulo ? ' — ' + titulo : ''));
+  out.push(`Vano: ${fmt(r.Vw)} x ${fmt(r.Vh)} cm`);
+  out.push('');
+  out.push(linea('Marco grande', 2, r.jambaLargo, r.Gf, r.espesorMarco));
+  out.push(linea('Marco superior grande', 1, r.cabezalLargo, r.Gf, r.espesorMarco));
+  out.push(linea('Marco pequeño lateral', 2, r.batienteLateralLargo, r.anchoBatiente, r.espesorBatiente));
+  out.push(linea('Marco pequeño superior', 1, r.batienteSuperiorLargo, r.anchoBatiente, r.espesorBatiente));
+  out.push(linea('Puerta (hoja)', 1, r.hojaAlto, r.hojaAncho, r.espesorHoja));
+  out.push(linea('Jamba lateral — interior', 2, r.tapaLateralInteriorLargo, r.tapaAncho, r.espesorTapa));
+  if (r.ambasCarasFlag){
+    out.push(linea('Jamba lateral — exterior', 2, r.tapaLateralExteriorLargo, r.tapaAncho, r.espesorTapa));
+  }
+  out.push(linea('Jamba superior — interior', 1, r.tapaSuperiorInteriorLargo, r.tapaAncho, r.espesorTapa));
+  if (r.ambasCarasFlag){
+    out.push(linea('Jamba superior — exterior', 1, r.tapaSuperiorExteriorLargo, r.tapaAncho, r.espesorTapa));
+  }
+  return out.join('\n');
+}
+
+document.getElementById('btnCopiarTexto').addEventListener('click', async () => {
+  const texto = buildTextoResumen();
+  const statusEl = document.getElementById('copyStatus');
+  try {
+    await navigator.clipboard.writeText(texto);
+    statusEl.textContent = 'Copiado. Ya lo puedes pegar donde quieras.';
+  } catch (err) {
+    statusEl.textContent = 'No se pudo copiar solo — selecciona y copia el texto manualmente.';
+  }
+  statusEl.style.display = 'block';
+  setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+});
+
+document.getElementById('btnWhatsapp').addEventListener('click', () => {
+  const texto = buildTextoResumen();
+  window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
 });
 
 render();
